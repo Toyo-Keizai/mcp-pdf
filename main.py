@@ -70,7 +70,7 @@ def get_page_rect(pdf_path: Path) -> dict[str, int]:
 
 
 @mcp.tool()
-def crop_pdf(
+def get_cropped_pdf(
     pdf_path: Path,
     page_num: int,
     x: int,
@@ -79,7 +79,7 @@ def crop_pdf(
     height: int,
     output_path: Path | None = None,
 ) -> str:
-    """Crop a PDF file and return the cropped image. The cropping rectangle must be within the page rectangle.
+    """Crop a PDF file and return the cropped pdf. The cropping rectangle must be within the page rectangle.
     Args:
         pdf_path: The full path to the PDF file
         page_num: The page number to crop. Starts from 0. (page_num=0 means the first page)
