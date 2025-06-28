@@ -68,5 +68,9 @@ Desktop.ini
 .python-version
 
 /playground
+.claude
+.cursor
+CLAUDE.md
+GEMINI.md
 
 # End of .gitignore 
