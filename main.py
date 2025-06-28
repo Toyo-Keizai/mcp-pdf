@@ -43,7 +43,7 @@ mcp = FastMCP(
 
 @mcp.tool()
 def get_pdf_summary(pdf_absolute_path: Path) -> dict[str, Any]:
-    """Get the summary of the PDF file. You should use this tool to get the summary of the pdf before reading it.
+    """Get the summary of the PDF file by a full absolute path of the PDF file. You should use this tool to get the summary of the pdf before reading it.
     Args:
         pdf_absolute_path: The full path to the PDF file
     Returns:
@@ -51,7 +51,7 @@ def get_pdf_summary(pdf_absolute_path: Path) -> dict[str, Any]:
         {
             "page_count": int,
             "total_characters": int,
-            "table_of_contents": list[dict[str, Any]],
+            "table_of_contents": list[tuple[int, str, int]],  # a list of `(level, title, page)`
             "width": int,
             "height": int,
         }
@@ -65,7 +65,7 @@ def read_pdf(
     pages: list[int] | None = None,
     output_absolute_path: Path | None = None,
 ) -> str:
-    """Read a PDF file and return the text content
+    """Read a PDF file and return the text content. You should always set `pages` to avoid reading the whole pdf because it might consume a lot of tokens.
     Args:
         pdf_absolute_path: The full path to the PDF file
         pages: Optional. The page numbers to read. Starts from 0. (pages=[0] means the first page)
