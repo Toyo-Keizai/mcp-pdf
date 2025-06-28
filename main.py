@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Any
 
 from fastmcp import FastMCP
 from fastmcp.utilities.types import Image
@@ -11,10 +12,10 @@ from lib.pdf import (
     get_cropped_pdf_image as get_cropped_pdf_image_tool,
 )
 from lib.pdf import (
-    get_page_rect as get_doc_info_tool,
+    get_pdf_image as get_pdf_image_tool,
 )
 from lib.pdf import (
-    get_pdf_image as get_pdf_image_tool,
+    get_pdf_summary as get_pdf_summary_tool,
 )
 from lib.pdf import (
     read_pdf as read_pdf_tool,
@@ -41,36 +42,42 @@ mcp = FastMCP(
 
 
 @mcp.tool()
-def read_pdf(pdf_path: Path, output_absolute_path: Path | None = None) -> str:
+def get_pdf_summary(pdf_absolute_path: Path) -> dict[str, Any]:
+    """Get the summary of the PDF file. You should use this tool to get the summary of the pdf before reading it.
+    Args:
+        pdf_absolute_path: The full path to the PDF file
+    Returns:
+        The summary of the pdf will be returned. The format is:
+        {
+            "page_count": int,
+            "total_characters": int,
+            "table_of_contents": list[dict[str, Any]],
+            "width": int,
+            "height": int,
+        }
+    """
+    return get_pdf_summary_tool(pdf_absolute_path)
+
+
+@mcp.tool()
+def read_pdf(
+    pdf_absolute_path: Path,
+    pages: list[int] | None = None,
+    output_absolute_path: Path | None = None,
+) -> str:
     """Read a PDF file and return the text content
     Args:
-        pdf_path: The full path to the PDF file
+        pdf_absolute_path: The full path to the PDF file
+        pages: Optional. The page numbers to read. Starts from 0. (pages=[0] means the first page)
         output_absolute_path: Optional. The full path to the output file. If provided, the text content will be saved to the path.
     Returns:
         The text content of the pdf will be returned.
     """
-    return read_pdf_tool(pdf_path, output_absolute_path)
+    return read_pdf_tool(pdf_absolute_path, pages, output_absolute_path)
 
 
 @mcp.tool()
-def get_page_rect(pdf_absolute_path: Path) -> dict[str, int]:
-    """Get the common rectangle of pages of the PDF file. This is useful when cropping rectangle of the pdf since the cropping rectangle must be within the page rectangle.
-    Args:
-        pdf_absolute_path: The full path to the PDF file
-    Returns:
-        The common rectangle of pages of the pdf will be returned. The format is:
-        {
-            x: int,
-            y: int,
-            width: int,
-            height: int,
-        }
-    """
-    return get_doc_info_tool(pdf_absolute_path)
-
-
-@mcp.tool()
-def get_cropped_pdf(
+def read_cropped_pdf(
     pdf_absolute_path: Path,
     page_num: int,
     x: int,

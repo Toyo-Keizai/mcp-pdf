@@ -1,7 +1,7 @@
 import io
 import logging
 from pathlib import Path
-from typing import Literal, Optional, TypedDict
+from typing import Any, Literal, Optional, TypedDict
 
 import pymupdf
 import pymupdf4llm
@@ -10,9 +10,10 @@ from fastmcp.utilities.types import Image
 logger = logging.getLogger(__name__)
 
 
-def to_markdown(doc: pymupdf.Document | Path) -> str:
+def to_markdown(doc: pymupdf.Document | Path, pages: list[int] | None = None) -> str:
     markdown = pymupdf4llm.to_markdown(
         doc,
+        pages=pages,
         ignore_images=True,
     )
 
@@ -33,9 +34,12 @@ class GeneralError(GeneralResult):
     details: str
 
 
-def read_pdf(pdf_path: Path, output_path: Optional[Path] = None) -> str:
+def read_pdf(
+    pdf_path: Path, pages: list[int] | None = None, output_path: Optional[Path] = None
+) -> str:
     logger.info(f"Reading PDF from {pdf_path}")
-    markdown = to_markdown(pdf_path)
+    doc = pymupdf.open(pdf_path)
+    markdown = to_markdown(doc, pages)
     logger.info(f"Converted PDF to Markdown. {len(markdown)} characters")
     if output_path:
         logger.info(f"Saving Markdown to {output_path}")
@@ -43,11 +47,12 @@ def read_pdf(pdf_path: Path, output_path: Optional[Path] = None) -> str:
     return markdown
 
 
-def get_page_rect(pdf_path: Path) -> dict[str, int]:
+def get_pdf_summary(pdf_path: Path) -> dict[str, Any]:
     doc = pymupdf.open(pdf_path)
     return {
-        "x": doc[0].rect.x0,
-        "y": doc[0].rect.y0,
+        "page_count": len(doc),
+        "total_characters": sum(len(page.get_text().encode("utf8")) for page in doc),  # type: ignore
+        "table_of_contents": doc.get_toc(),  # type: ignore
         "width": doc[0].rect.width,
         "height": doc[0].rect.height,
     }
