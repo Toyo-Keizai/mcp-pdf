@@ -35,11 +35,11 @@ class GeneralError(GeneralResult):
 
 
 def read_pdf(
-    pdf_path: Path, pages: list[int] | None = None, output_path: Optional[Path] = None
+    pdf_path: Path, page_num: int | None = None, output_path: Optional[Path] = None
 ) -> str:
     logger.info(f"Reading PDF from {pdf_path}")
     doc = pymupdf.open(pdf_path)
-    markdown = to_markdown(doc, pages)
+    markdown = to_markdown(doc, [page_num] if page_num is not None else None)
     logger.info(f"Converted PDF to Markdown. {len(markdown)} characters")
     if output_path:
         logger.info(f"Saving Markdown to {output_path}")

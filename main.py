@@ -62,18 +62,18 @@ def get_pdf_summary(pdf_absolute_path: Path) -> dict[str, Any]:
 @mcp.tool()
 def read_pdf(
     pdf_absolute_path: Path,
-    pages: list[int] | None = None,
+    page_num: int,
     output_absolute_path: Path | None = None,
 ) -> str:
-    """Read a PDF file and return the text content. You should always set `pages` to avoid reading the whole pdf because it might consume a lot of tokens.
+    """Read a PDF file and return the text content. You should always set `page_num` to avoid reading the whole pdf because it might consume a lot of tokens.
     Args:
         pdf_absolute_path: The full path to the PDF file
-        pages: Optional. The page numbers to read. Starts from 0. (pages=[0] means the first page)
+        page_num: The page number to read. Starts from 0. (page_num=0 means the first page)
         output_absolute_path: Optional. The full path to the output file. If provided, the text content will be saved to the path.
     Returns:
         The text content of the pdf will be returned.
     """
-    return read_pdf_tool(pdf_absolute_path, pages, output_absolute_path)
+    return read_pdf_tool(pdf_absolute_path, page_num, output_absolute_path)
 
 
 @mcp.tool()
